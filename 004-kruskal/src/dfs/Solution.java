@@ -47,12 +47,6 @@ class Result {
         Set<Edge> mst = new HashSet<>();
         Map<Integer, Set<Integer>> nodes = new HashMap<>();
 
-        int sizeDisjointSet = gNodes + 1;
-        int[] disjointSet = new int[sizeDisjointSet];
-        for (int i = 0; i < sizeDisjointSet; i++) {
-            disjointSet[i] = -1;
-        }
-
         for (Edge edge: edges){
 
             if (mst.size() == edgesTarget) {
@@ -149,7 +143,7 @@ class Result {
 
 public class Solution {
 
-    private static final String OUTPUT_PATH = "/output.txt";
+    private static final String OUTPUT_PATH = "/Users/viccardo/Documents/courses/hackerrank/src/hackerrank/004-kruskal/output.txt";
 
     public static void main(String[] args) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
