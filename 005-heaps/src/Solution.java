@@ -4,7 +4,7 @@ import java.util.*;
 /**
  *  https://www.hackerrank.com/challenges/find-the-running-median/problem
  *
- *  Find the Running Median
+ *  Find the Running Median.
  *
  *  Using Data Structure: Priority Queue based on Heaps
  *
