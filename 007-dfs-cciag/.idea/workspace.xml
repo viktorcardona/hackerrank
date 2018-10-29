@@ -115,17 +115,6 @@
             <path>
               <item name="007-dfs-cciag" type="b2602c69:ProjectViewProjectNode" />
               <item name="007-dfs-cciag" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="007-dfs-cciag" type="b2602c69:ProjectViewProjectNode" />
-              <item name="007-dfs-cciag" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="production" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="007-dfs-cciag" type="b2602c69:ProjectViewProjectNode" />
-              <item name="007-dfs-cciag" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
