@@ -17,7 +17,7 @@ public class Solution {
         java.util.Set<Integer> numbersInOrderSet = new java.util.HashSet<>(numbersInOrder);
         boolean hasDuplicates = numbersInOrder.size() != numbersInOrderSet.size();
         if (hasDuplicates) {
-            return false; //It is not allowed duplicates based on the description of the problem
+            return false; // It is not allowed duplicates based on the description of the problem
         }
         java.util.List<Integer> numbersSorted = numbersInOrder.stream().sorted().collect(java.util.stream.Collectors.toList());
         return java.util.stream.IntStream.range(0, numbersInOrder.size())
