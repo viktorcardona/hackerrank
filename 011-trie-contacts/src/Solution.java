@@ -1,14 +1,16 @@
 import java.io.*;
-import java.math.*;
-import java.text.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.*;
-import java.util.stream.Stream;
 
 /**
  *  Tries
  *
  *  https://www.hackerrank.com/challenges/contacts/problem
+ *
+ *  Solution Using a Trie:
+ *      https://www.hackerrank.com/challenges/contacts/forum/comments/255027
+ *
  *
  */
 public class Solution {
@@ -20,122 +22,97 @@ public class Solution {
         /*
          * Write your code here.
          */
-
         Trie contacts = new Trie();
 
-        List<Integer> numberOfContacts = new ArrayList<>();
+        int[] numberOfContacts = new int[queries.length];
+        int index = 0;
 
         for (int i = 0; i < queries.length; i++) {
             String contact = queries[i][1];
-            switch (queries[i][0]) {
-                case "add":
-                    contacts.insert(contact);
-                    break;
-                case "find":
-                    Trie.TrieNode node = contacts.search(contact);
-                    numberOfContacts.add(countContacts(node));
-                    break;
+            String action  = queries[i][0];
+
+            if ("add".equals(action)) {
+                contacts.add(contact);
+            } else { // find
+                numberOfContacts[index] = contacts.countWordsWithPrefix(contact);
+                index++;
             }
         }
 
-        return numberOfContacts.stream().mapToInt(i -> i).toArray();
-    }
-
-    private static Integer countContacts(Trie.TrieNode node) {
-        if (node == null) {
-            return 0;
-        }
-
-        int count = node.isEndOfWord ? 1 : 0;
-
-        for (Trie.TrieNode children: node.children) {
-            if (children != null) {
-                count += children.isEndOfWord ? 1 : 0;
-                count += countContacts(children);
-            }
-        }
-
-        return count;
+        return Arrays.copyOfRange(numberOfContacts, 0, index);
     }
 
     static class Trie {
 
-        static final int ALPHABET_SIZE = 26;
         private TrieNode root;
 
         public Trie() {
-            this.root = new TrieNode();
+            root = new TrieNode();
         }
 
-        class TrieNode {
+        private class TrieNode {
 
-            private TrieNode[] children = new TrieNode[ALPHABET_SIZE];
+            private final Map<Character, TrieNode> children;
             private boolean isEndOfWord;
+            private int size; // This is the KEY: https://www.hackerrank.com/challenges/contacts/forum/comments/255027
 
             public TrieNode() {
-                for (int i = 0; i < ALPHABET_SIZE; i++) {
-                    children[i] = null;
-                }
+                children = new HashMap<>();
+                isEndOfWord = false;
+                size = 0;
             }
         }
 
-        public void insert(String key) {
-
-            TrieNode trieNode = search(key);
-
-            if (trieNode != null) {
-                trieNode.isEndOfWord = true;
-                return;
-            }
+        public TrieNode find(String key) {
 
             TrieNode node = root;
 
             for (int level = 0; level < key.length(); level++) {
-                int index = key.charAt(level) - 'a';
-                if (node.children[index] == null) {
-                    node.children[index] = new TrieNode();
-                }
-                node = node.children[index];
-            }
-
-            node.isEndOfWord = true;
-        }
-
-        public TrieNode search(String key) {
-
-            TrieNode node = root;
-
-            for (int level = 0; level < key.length(); level++) {
-                int index = key.charAt(level) - 'a';
-                if (node.children[index] == null) {
-                    return null;
-                }
-                node = node.children[index];
+                Character character = key.charAt(level);
+                node = node.children.get(character);
+                if ( node == null ) return null;
             }
 
             return node;
         }
 
+        public void add(String key) {
+            TrieNode node = root;
+
+            for (int level = 0; level < key.length(); level++) {
+                Character character = key.charAt(level);
+                node = node.children.computeIfAbsent(character, k ->  new TrieNode());
+                node.size++;
+            }
+
+            node.isEndOfWord = true;
+        }
+
+        public Integer countWordsWithPrefix(String prefix) {
+            TrieNode node = find(prefix);
+            return node == null ? 0 : node.size;
+        }
     }
 
-    private static final String OUTPUT_PATH = "/Users/viccardo/Documents/courses/hackerrank/src/hackerrank/011-trie-contacts/output.txt";
+    private static final String OUTPUT_PATH = "/output.txt";
 
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException {
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(OUTPUT_PATH));
 
-        int queriesRows = Integer.parseInt(scanner.nextLine().trim());
+        String fileName = "/input3.txt";
 
-        String[][] queries = new String[queriesRows][2];
+        List<String> lines = Files.readAllLines(Paths.get(fileName));
+        String[][] queries = new String[lines.size() - 1][2];
+        lines.remove(0);
 
-        for (int queriesRowItr = 0; queriesRowItr < queriesRows; queriesRowItr++) {
-            String[] queriesRowItems = scanner.nextLine().split(" ");
-
-            for (int queriesColumnItr = 0; queriesColumnItr < 2; queriesColumnItr++) {
-                String queriesItem = queriesRowItems[queriesColumnItr];
-                queries[queriesRowItr][queriesColumnItr] = queriesItem;
-            }
+        int index = 0;
+        for (String line: lines) {
+            String[] split = line.split(" ");
+            queries[index][0] = split[0];
+            queries[index][1] = split[1];
+            index++;
         }
 
         int[] result = contacts(queries);
@@ -152,4 +129,5 @@ public class Solution {
 
         bufferedWriter.close();
     }
+
 }
