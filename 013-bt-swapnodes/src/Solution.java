@@ -1,8 +1,5 @@
 import java.io.*;
-import java.math.*;
-import java.text.*;
 import java.util.*;
-import java.util.regex.*;
 
 /**
  *
@@ -44,14 +41,14 @@ public class Solution {
          */
 
         Tree tree = buildTree(indexes);
-        List<List<Integer>> inOrders = new ArrayList<>();
 
-        for (int depth: queries) {
+        int[][] result = new int[queries.length][tree.size];
+        for (int indexSwap = 0; indexSwap < queries.length; indexSwap++) {
+            int depth = queries[indexSwap];
             tree.swap(depth);
-            inOrders.add(tree.inOrder());
+            result = tree.inOrder(result, indexSwap);
         }
-
-        
+        return result;
     }
 
     private static Tree buildTree(int[][] indexes) {
@@ -65,27 +62,32 @@ public class Solution {
     static class Tree {
 
         Node root;
-        int size;
+        int size; // number of nodes
+        int maxDepth;
 
         public Tree(int rootData) {
             int depth = 1;
             root = new Node(rootData, depth);
             size = 1;
-
+            maxDepth = depth;
         }
 
-        List<Integer> inOrder() {
-            return inOrder(root, new ArrayList<>());
+        int pos;
+
+        int[][] inOrder(int[][] result, final int indexSwap) {
+            pos = 0;
+            return inOrder(root, result, indexSwap);
         }
 
-        List<Integer> inOrder(Node node, List<Integer> inOrder) {
+        int[][] inOrder(Node node, int[][] result, final int indexSwap) {
             if (node == null) {
-                return inOrder;
+                return result;
             }
-            inOrder = inOrder(node.left, inOrder);
-            inOrder.add(node.data);
-            inOrder = inOrder(node.right, inOrder);
-            return inOrder;
+            result = inOrder(node.left, result, indexSwap);
+            result[indexSwap][pos] = node.data;
+            pos++;
+            result = inOrder(node.right, result, indexSwap);
+            return result;
         }
 
         void add(int parentData, int leftData, int rightData) {
@@ -94,16 +96,17 @@ public class Solution {
             }
             Node node = findNodeByValue(parentData);
             if (node == null) {
-                System.out.println("Parent Data Node not Found: " + parentData);
                 return;
             }
             if (leftData != -1) {
                 node.left = new Node(leftData, node.depth + 1);
                 size++;
+                maxDepth = Math.max(maxDepth, node.depth + 1);
             }
             if (rightData != -1) {
                 node.right = new Node(rightData, node.depth + 1);
                 size++;
+                maxDepth = Math.max(maxDepth, node.depth + 1);
             }
         }
 
@@ -128,11 +131,16 @@ public class Solution {
             return null;
         }
 
-        public void swap(int depth) {
-            List<Node> depthNodes = depthNodes(depth);
-            for (Node node: depthNodes) {
-                swap(node.left);
-                swap(node.right);
+        public void swap(final int depth) {
+            int multiple = 1;
+            int depthIndex = depth * multiple;
+            while (depthIndex <= maxDepth) {
+                List<Node> depthNodes = depthNodes(depthIndex);
+                for (Node node: depthNodes) {
+                    swap(node);
+                }
+                multiple++;
+                depthIndex = depth * multiple;
             }
         }
 
@@ -141,6 +149,7 @@ public class Solution {
             queue.add(root);
 
             List<Node> nodesDepth = new ArrayList<>();
+
             while (!queue.isEmpty()) {
                 Node node = queue.poll();
                 int currentDepth = node.depth;
@@ -177,13 +186,15 @@ public class Solution {
                 left = right = null;
             }
         }
-
     }
 
+
+    private static final String OUTPUT_PATH = "output.txt";
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException {
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+        //BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(OUTPUT_PATH));
 
         int n = Integer.parseInt(scanner.nextLine().trim());
 
