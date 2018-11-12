@@ -25,9 +25,7 @@ public class Solution {
             for (int j = 0; j < columns; j++) {
                 if (!visited[i][j] && grid[i][j] == 1) {
                     int region = dfs(i, j, grid, visited, rows, columns);
-                    if (region > maxRegion) {
-                        maxRegion = region;
-                    }
+                    maxRegion = Math.max(region, maxRegion);
                 }
             }
         }
